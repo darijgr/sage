@@ -1291,7 +1291,7 @@ def specht_module_spanning_set(D, SGA=None):
     row_stab = dict()
     col_stab = dict()
     B = SGA.basis()  # this is just S_n
-    col_inc_perms = [] # list of permutations that increase on the columns of D
+    row_inc_perms = [] # list of permutations that increase on the columns of D
     for w in B.keys():
         # Remember that the permutation w is 1-based.
         # Compute row_perm = w(row_diagram) and
@@ -1308,9 +1308,9 @@ def specht_module_spanning_set(D, SGA=None):
             row_stab[w] = R.one()
         if col_diagram == [sorted(c) for c in col_perm]:
             col_stab[w] = w.sign() * R.one()
-        #if all(i < j for col in col_perm
-        #       for (i, j) in zip(col, col[1:])):
-        #    col_inc_perms.append(w)
+        if all(i < j for row in col_perm
+               for (i, j) in zip(row, row[1:])):
+            row_inc_perms.append(w)
     row_stab = SGA._from_dict(row_stab)
     col_stab = SGA._from_dict(col_stab)
     # The Young symmetrizer:
@@ -1322,7 +1322,7 @@ def specht_module_spanning_set(D, SGA=None):
     # S_n, but actually it suffices for b to range
     # over the permutations that increase along
     # the columns of D.
-    return tuple([b * gen for b in B])
+    return tuple([b * gen for b in row_inc_perms])
 
 
 def specht_module_rank(D, base_ring=None):
